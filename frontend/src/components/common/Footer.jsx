@@ -17,80 +17,80 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-slate-900 text-slate-300 pt-16 pb-8 border-t border-slate-800">
+    <footer className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-300 pt-16 pb-10 border-t border-slate-800/80 shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800/80">
           {/* Brand Col */}
           <div className="md:col-span-1 space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-teal-500 flex items-center justify-center text-white shadow-md">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
                 <Hotel className="w-5 h-5" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-white">
+              <span className="text-xl font-extrabold tracking-tight text-white">
                 Stay<span className="text-saffron-500">Kart</span>
               </span>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
               Book Smart. Stay Easy. Discover verified authentic stays across India with transparent GST tariffs and instant UPI refunds.
             </p>
-            <div className="flex items-center gap-2 text-xs text-teal-400">
-              <ShieldCheck className="w-4 h-4" />
-              <span>100% Verified Indian Properties</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-950/60 border border-teal-800/50 text-xs text-teal-300">
+              <ShieldCheck className="w-4 h-4 text-teal-400" />
+              <span className="font-medium">100% Verified Indian Properties</span>
             </div>
           </div>
 
           {/* Top Indian Destinations */}
           <div className="md:col-span-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-1.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-saffron-500" />
               Popular Indian Destinations
             </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {destinations.map((d) => (
                 <Link
                   key={d.name}
                   to={`/search?city=${encodeURIComponent(d.name)}`}
-                  className="group block p-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors"
+                  className="group block p-2.5 rounded-xl bg-slate-800/40 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition-all duration-200"
                 >
-                  <p className="text-sm font-semibold text-white group-hover:text-teal-400 transition-colors">
+                  <p className="text-xs sm:text-sm font-semibold text-white group-hover:text-teal-400 transition-colors">
                     {d.name}
                   </p>
-                  <p className="text-[11px] text-slate-400 truncate">{d.desc}</p>
+                  <p className="text-[11px] text-slate-400 truncate mt-0.5">{d.desc}</p>
                 </Link>
               ))}
             </div>
           </div>
 
           {/* Quick Links & Legal */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4">
-              Platform & Legal
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+              Platform &amp; Legal
             </h4>
-            <ul className="space-y-2 text-sm text-slate-400">
+            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-400">
               <li>
-                <Link to="/search" className="hover:text-teal-400 transition-colors">
-                  Search All Rooms
+                <Link to="/search" className="hover:text-teal-400 transition-colors flex items-center gap-1.5">
+                  <span>&bull;</span> Search All Rooms
                 </Link>
               </li>
               <li>
                 {isAdmin ? (
-                  <Link to="/admin" className="hover:text-teal-400 transition-colors">
-                    Admin Dashboard
+                  <Link to="/admin" className="hover:text-teal-400 transition-colors flex items-center gap-1.5">
+                    <span>&bull;</span> Admin Dashboard
                   </Link>
                 ) : (
-                  <Link to="/my-bookings" className="hover:text-teal-400 transition-colors">
-                    My Bookings & Invoices
+                  <Link to="/my-bookings" className="hover:text-teal-400 transition-colors flex items-center gap-1.5">
+                    <span>&bull;</span> My Bookings &amp; Invoices
                   </Link>
                 )}
               </li>
               <li>
-                <Link to="/credits" className="text-teal-400 hover:text-teal-300 font-medium underline underline-offset-4 transition-colors">
-                  Photo credits & Licences
+                <Link to="/credits" className="text-teal-400 hover:text-teal-300 font-medium underline underline-offset-4 transition-colors flex items-center gap-1.5">
+                  <span>&bull;</span> Photo credits &amp; Licences
                 </Link>
               </li>
             </ul>
-            <div className="pt-3">
-              <p className="text-xs text-slate-500 leading-relaxed">
+            <div className="pt-2">
+              <p className="text-[11px] text-slate-500 leading-relaxed">
                 Prices inclusive of Indian GST where applicable. CGST &amp; SGST invoiced per Government of India slabs (0%, 5%, 18%).
               </p>
             </div>
@@ -102,7 +102,7 @@ export default function Footer() {
           <p>
             &copy; {new Date().getFullYear()} StayKart Technologies Private Limited. All rights reserved.
           </p>
-          <div className="flex items-center gap-1 text-slate-400">
+          <div className="flex items-center gap-1.5 text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-800">
             <span>Crafted with</span>
             <Heart className="w-3.5 h-3.5 text-saffron-500 fill-saffron-500" />
             <span>for Indian hospitality</span>

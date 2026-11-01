@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { Hotel, Lock, Mail, AlertCircle, ArrowRight, User, ShieldCheck } from 'lucide-react';
+import { Hotel, Lock, Mail, AlertCircle, ArrowRight, User, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState(searchParams.get('email') || '');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,7 +24,7 @@ export default function LoginPage() {
 
     try {
       const loggedUser = await login({ email: email.trim().toLowerCase(), password });
-      toast.success(`Welcome back, ${loggedUser.fullName}!`);
+      toast.success(`Welcome back, ${loggedUser.fullName}!`, 4000, 'Logged in Successfully');
       if ((loggedUser.role === 'ADMIN' || loggedUser.role === 'ROLE_ADMIN') && redirect === '/') {
         navigate('/admin');
       } else {
@@ -32,6 +33,7 @@ export default function LoginPage() {
     } catch (err) {
       const msg = err.response?.data?.message || 'Invalid email or password';
       setError(msg);
+      toast.error(msg, 4000, 'Login Failed');
     } finally {
       setLoading(false);
     }
@@ -135,13 +137,21 @@ export default function LoginPage() {
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-2.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/40 rounded-lg transition-colors cursor-pointer"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 

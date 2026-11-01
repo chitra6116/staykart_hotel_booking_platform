@@ -62,20 +62,20 @@ export default function HeroSearchBar({
   return (
     <form
       onSubmit={handleSearch}
-      className={`bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-3 sm:p-4 transition-all ${className}`}
+      className={`bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-900/10 dark:shadow-slate-950/40 border border-slate-200/90 dark:border-slate-800 p-3 sm:p-4 transition-all duration-200 ${className}`}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         {/* City Select */}
-        <div className="relative flex items-center px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 focus-within:ring-2 focus-within:ring-teal-500">
+        <div className="relative flex items-center px-4 py-2.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
           <MapPin className="w-5 h-5 text-teal-600 dark:text-teal-400 shrink-0 mr-3" />
           <div className="flex-1 min-w-0">
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               City / Destination
             </label>
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full bg-transparent text-sm font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+              className="w-full bg-transparent text-sm font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
             >
               <option value="">All Destinations</option>
               {CITIES.map((c) => (
@@ -88,10 +88,10 @@ export default function HeroSearchBar({
         </div>
 
         {/* Check In Date */}
-        <div className="relative flex items-center px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 focus-within:ring-2 focus-within:ring-teal-500">
+        <div className="relative flex items-center px-4 py-2.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
           <Calendar className="w-5 h-5 text-teal-600 dark:text-teal-400 shrink-0 mr-3" />
           <div className="flex-1 min-w-0">
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Check-in Date
             </label>
             <input
@@ -100,16 +100,16 @@ export default function HeroSearchBar({
               value={checkIn}
               onChange={handleCheckInChange}
               required
-              className="w-full bg-transparent text-sm font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+              className="w-full bg-transparent text-sm font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
             />
           </div>
         </div>
 
         {/* Check Out Date */}
-        <div className="relative flex items-center px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 focus-within:ring-2 focus-within:ring-teal-500">
+        <div className="relative flex items-center px-4 py-2.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
           <Calendar className="w-5 h-5 text-teal-600 dark:text-teal-400 shrink-0 mr-3" />
           <div className="flex-1 min-w-0">
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Check-out Date
             </label>
             <input
@@ -118,22 +118,22 @@ export default function HeroSearchBar({
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
               required
-              className="w-full bg-transparent text-sm font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+              className="w-full bg-transparent text-sm font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
             />
           </div>
         </div>
 
         {/* Guests Select */}
-        <div className="relative flex items-center px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 focus-within:ring-2 focus-within:ring-teal-500">
+        <div className="relative flex items-center px-4 py-2.5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
           <Users className="w-5 h-5 text-teal-600 dark:text-teal-400 shrink-0 mr-3" />
           <div className="flex-1 min-w-0">
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Guests
             </label>
             <select
               value={guests}
               onChange={(e) => setGuests(Number(e.target.value))}
-              className="w-full bg-transparent text-sm font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+              className="w-full bg-transparent text-sm font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
             >
               {[1, 2, 3, 4, 5, 6].map((num) => (
                 <option key={num} value={num} className="text-slate-900">
@@ -147,7 +147,7 @@ export default function HeroSearchBar({
         {/* Search Submit Button */}
         <button
           type="submit"
-          className="w-full h-[52px] px-6 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-500/25 hover:shadow-teal-500/35 transition-all cursor-pointer sm:col-span-2 lg:col-span-1"
+          className="w-full h-[52px] px-6 rounded-2xl bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer sm:col-span-2 lg:col-span-1"
         >
           <Search className="w-5 h-5" />
           <span>Search</span>

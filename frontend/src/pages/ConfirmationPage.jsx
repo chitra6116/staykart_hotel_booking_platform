@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { bookingApi } from '../api/bookingApi';
 import { formatINR, formatDate } from '../utils/formatters';
+import { useCurrency } from '../context/CurrencyContext';
 import {
   CheckCircle2,
   Download,
@@ -16,6 +17,7 @@ import {
 
 export default function ConfirmationPage() {
   const { code } = useParams();
+  const { formatPrice, selectedCountry } = useCurrency();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
@@ -118,9 +120,9 @@ export default function ConfirmationPage() {
           </div>
 
           <div className="text-left sm:text-right">
-            <span className="text-xs text-slate-400">Total Paid (incl. GST)</span>
+            <span className="text-xs text-slate-400">Total Paid (incl. {selectedCountry.taxName})</span>
             <div className="text-2xl font-black text-teal-600 dark:text-teal-400">
-              {formatINR(booking.totalAmountInr)}
+              {formatPrice(booking.totalAmountInr)}
             </div>
           </div>
         </div>

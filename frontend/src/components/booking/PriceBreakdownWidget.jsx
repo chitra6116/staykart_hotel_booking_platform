@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { formatINR } from '../../utils/formatters';
+import { useCurrency } from '../../context/CurrencyContext';
 import { Info, ChevronDown, ChevronUp, ShieldCheck, Tag } from 'lucide-react';
 
 export default function PriceBreakdownWidget({ quote, loading = false }) {
   const [showDailyDetails, setShowDailyDetails] = useState(false);
+  const { formatPrice, selectedCountry } = useCurrency();
 
   if (loading) {
     return (
@@ -35,12 +37,22 @@ export default function PriceBreakdownWidget({ quote, loading = false }) {
     dailyBreakdown = []
   } = quote;
 
-  const totalGstInr = (Number(cgstInr || 0) + Number(sgstInr || 0)).toFixed(2);
-  const hasDiscount = Number(totalDiscountInr) > 0;
-
-  // Determine effective GST rate from daily breakdown
+  const isIndia = selectedCountry?.isIndianGst ?? true;
   const rawGst = dailyBreakdown.length > 0 ? dailyBreakdown[0].gstPercentage : 18;
   const firstGstRate = Number(rawGst) || 18;
+
+  let totalTaxInr;
+  let finalTotalInr;
+
+  if (isIndia) {
+    totalTaxInr = (Number(cgstInr || 0) + Number(sgstInr || 0)).toFixed(2);
+    finalTotalInr = totalAmountInr;
+  } else {
+    totalTaxInr = (Number(taxableAmountInr || 0) * (selectedCountry?.taxRate || 0)).toFixed(2);
+    finalTotalInr = (Number(taxableAmountInr || 0) + Number(totalTaxInr)).toFixed(2);
+  }
+
+  const hasDiscount = Number(totalDiscountInr) > 0;
 
   return (
     <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-5 space-y-4">
@@ -57,7 +69,7 @@ export default function PriceBreakdownWidget({ quote, loading = false }) {
         {/* Base tariff */}
         <div className="flex justify-between text-slate-600 dark:text-slate-300">
           <span>Base Room Tariff</span>
-          <span className="font-semibold">{formatINR(totalBaseInr)}</span>
+          <span className="font-semibold">{formatPrice(totalBaseInr)}</span>
         </div>
 
         {/* Discount if applicable */}
@@ -67,38 +79,56 @@ export default function PriceBreakdownWidget({ quote, loading = false }) {
               <Tag className="w-3.5 h-3.5" />
               Length-of-Stay Savings (10%)
             </span>
-            <span className="font-semibold">- {formatINR(totalDiscountInr)}</span>
+            <span className="font-semibold">- {formatPrice(totalDiscountInr)}</span>
           </div>
         )}
 
         {/* Taxable Amount */}
         <div className="flex justify-between text-slate-700 dark:text-slate-200 font-medium pt-1">
           <span>Net Tariff (Taxable)</span>
-          <span>{formatINR(taxableAmountInr)}</span>
+          <span>{formatPrice(taxableAmountInr)}</span>
         </div>
 
-        {/* GST Section */}
-        <div className="pt-2 border-t border-dashed border-slate-200 dark:border-slate-700 space-y-1.5 text-xs">
-          <div className="flex justify-between text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-1">
-              GST Slab on per-night tariff
-              <Info className="w-3 h-3 text-slate-400" />
-            </span>
-            <span className="font-semibold text-slate-700 dark:text-slate-300">
-              {firstGstRate}% GST
-            </span>
-          </div>
+        {/* Tax Section */}
+        {isIndia ? (
+          <div className="pt-2 border-t border-dashed border-slate-200 dark:border-slate-700 space-y-1.5 text-xs">
+            <div className="flex justify-between text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                GST Slab on per-night tariff
+                <Info className="w-3 h-3 text-slate-400" />
+              </span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                {firstGstRate}% GST
+              </span>
+            </div>
 
-          <div className="flex justify-between text-slate-500 dark:text-slate-400 pl-2">
-            <span>CGST (Central GST: {(firstGstRate / 2).toFixed(1)}%)</span>
-            <span>{formatINR(cgstInr, true)}</span>
-          </div>
+            <div className="flex justify-between text-slate-500 dark:text-slate-400 pl-2">
+              <span>CGST (Central GST: {(firstGstRate / 2).toFixed(1)}%)</span>
+              <span>{formatPrice(cgstInr, true)}</span>
+            </div>
 
-          <div className="flex justify-between text-slate-500 dark:text-slate-400 pl-2">
-            <span>SGST (State GST: {(firstGstRate / 2).toFixed(1)}%)</span>
-            <span>{formatINR(sgstInr, true)}</span>
+            <div className="flex justify-between text-slate-500 dark:text-slate-400 pl-2">
+              <span>SGST (State GST: {(firstGstRate / 2).toFixed(1)}%)</span>
+              <span>{formatPrice(sgstInr, true)}</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="pt-2 border-t border-dashed border-slate-200 dark:border-slate-700 space-y-1.5 text-xs">
+            <div className="flex justify-between text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
+                {selectedCountry.taxName}
+                <Info className="w-3 h-3 text-slate-400" />
+              </span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                {formatPrice(totalTaxInr, true)}
+              </span>
+            </div>
+            <div className="flex justify-between text-slate-400 text-[11px] pl-2">
+              <span>{selectedCountry.taxLabel}</span>
+              <span>{(selectedCountry.taxRate * 100).toFixed(1)}%</span>
+            </div>
+          </div>
+        )}
 
         {/* Toggle daily itemized view */}
         {dailyBreakdown.length > 0 && (
@@ -132,7 +162,7 @@ export default function PriceBreakdownWidget({ quote, loading = false }) {
                       )}
                     </div>
                     <span className="font-semibold text-slate-900 dark:text-white">
-                      {formatINR(item.totalNightInr)}
+                      {formatPrice(item.totalNightInr)}
                     </span>
                   </div>
                 ))}
@@ -148,18 +178,22 @@ export default function PriceBreakdownWidget({ quote, loading = false }) {
               Total Amount
             </span>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Includes {formatINR(totalGstInr, true)} taxes &amp; charges
+              Includes {formatPrice(totalTaxInr, true)} {isIndia ? 'GST' : selectedCountry?.taxName}
             </p>
           </div>
           <span className="text-2xl font-extrabold text-teal-600 dark:text-teal-400">
-            {formatINR(totalAmountInr)}
+            {formatPrice(finalTotalInr)}
           </span>
         </div>
       </div>
 
       <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-1">
         <ShieldCheck className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-        <span>No hidden fees. Full GST invoice provided upon booking confirmation.</span>
+        <span>
+          {isIndia
+            ? 'No hidden fees. Full GST invoice provided upon booking confirmation.'
+            : `No hidden fees. Full invoice with itemized ${selectedCountry?.taxName} provided upon booking confirmation.`}
+        </span>
       </div>
     </div>
   );

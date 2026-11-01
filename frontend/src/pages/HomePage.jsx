@@ -4,6 +4,7 @@ import HeroSearchBar from '../components/search/HeroSearchBar';
 import Modal from '../components/common/Modal';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useCurrency } from '../context/CurrencyContext';
 import {
   ShieldCheck,
   Receipt,
@@ -19,6 +20,7 @@ import {
 export default function HomePage() {
   const { user, isAdmin } = useAuth();
   const toast = useToast();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const destinations = [
     {
@@ -258,29 +260,29 @@ export default function HomePage() {
             <Link
               key={d.city}
               to={`/search?city=${encodeURIComponent(d.city)}`}
-              className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 flex flex-col"
+              className="card-hover group relative rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 flex flex-col"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-700">
                 <img
                   src={d.image}
                   alt={`${d.city} destination stay`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                <div className="absolute bottom-3 left-3 text-white">
-                  <p className="text-lg font-bold leading-tight">{d.city}</p>
-                  <p className="text-xs text-slate-300">{d.state}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
+                <div className="absolute bottom-3.5 left-3.5 text-white">
+                  <p className="text-lg font-bold leading-tight drop-shadow-sm">{d.city}</p>
+                  <p className="text-xs text-slate-300 drop-shadow-sm">{d.state}</p>
                 </div>
               </div>
               <div className="p-4 flex-1 flex flex-col justify-between">
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                   {d.title}
                 </p>
-                <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 dark:text-slate-400">Starting from</span>
-                  <span className="font-bold text-teal-600 dark:text-teal-400 text-sm">
-                    ₹{d.startingPrice.toLocaleString('en-IN')}/night
+                <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Starting from</span>
+                  <span className="font-extrabold text-teal-600 dark:text-teal-400 text-sm">
+                    {formatPrice(d.startingPrice)}<span className="text-xs font-normal text-slate-500 dark:text-slate-400">/night</span>
                   </span>
                 </div>
               </div>
@@ -290,35 +292,36 @@ export default function HomePage() {
       </section>
 
       {/* Why StayKart / Engineered Features */}
-      <section className="bg-slate-50 dark:bg-slate-800/40 py-16 border-y border-slate-200 dark:border-slate-800">
+      <section className="bg-gradient-to-b from-slate-50 to-white dark:from-slate-900/40 dark:to-slate-800/20 py-20 border-y border-slate-200/80 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60">
+              <Sparkles className="w-3.5 h-3.5 text-teal-500" />
               Reliable Hospitality Platform
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-3">
               Why Guests Trust StayKart
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 font-normal">
               Designed for modern travelers in India who demand authentic stays, honest pricing, and complete reliability.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {features.map((feat, idx) => {
               const Icon = feat.icon;
               return (
                 <div
                   key={idx}
-                  className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+                  className="card-hover bg-white dark:bg-slate-800/90 p-7 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/70 text-teal-600 dark:text-teal-300 flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500/10 to-teal-500/20 dark:from-teal-950/80 dark:to-teal-900/60 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-5 border border-teal-500/20">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 leading-snug">
                     {feat.title}
                   </h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
                     {feat.desc}
                   </p>
                 </div>

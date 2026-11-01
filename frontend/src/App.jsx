@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { CurrencyProvider } from './context/CurrencyContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { ToastProvider } from './context/ToastContext';
 
 // Common
@@ -63,8 +65,10 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <ToastProvider>
-            <BrowserRouter>
+          <CurrencyProvider>
+            <NotificationProvider>
+              <ToastProvider>
+                <BrowserRouter>
               <ErrorBoundary>
                 <Routes>
                   {/* Public and Guest routes wrapped in PublicLayout */}
@@ -136,7 +140,9 @@ export default function App() {
               </ErrorBoundary>
             </BrowserRouter>
           </ToastProvider>
-        </AuthProvider>
+        </NotificationProvider>
+      </CurrencyProvider>
+    </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

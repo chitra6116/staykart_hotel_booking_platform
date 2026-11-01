@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { bookingApi } from '../api/bookingApi';
 import { formatINR, formatDate } from '../utils/formatters';
 import { useToast } from '../context/ToastContext';
+import { useCurrency } from '../context/CurrencyContext';
 import Modal from '../components/common/Modal';
 import {
   Calendar,
@@ -17,6 +18,7 @@ import {
 
 export default function MyBookingsPage() {
   const toast = useToast();
+  const { formatPrice, selectedCountry } = useCurrency();
   const [activeTab, setActiveTab] = useState('upcoming'); // upcoming, past, cancelled
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,12 +87,12 @@ export default function MyBookingsPage() {
     setCancelling(true);
     try {
       await bookingApi.cancel(selectedBooking.id, cancelReason || 'Guest requested cancellation');
-      toast.success('Booking cancelled successfully. Refund initiated.');
+      toast.success('Booking cancelled successfully. Refund initiated.', 5000, 'Booking Cancelled');
       setCancelModalOpen(false);
       fetchBookings();
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to cancel booking';
-      toast.error(message);
+      toast.error(message, 4000, 'Cancellation Failed');
     } finally {
       setCancelling(false);
     }
@@ -237,9 +239,9 @@ export default function MyBookingsPage() {
               {/* Price and Actions */}
               <div className="w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-700/60 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3">
                 <div className="text-left md:text-right">
-                  <span className="text-[11px] text-slate-400">Total Paid (INR)</span>
+                  <span className="text-[11px] text-slate-400">Total Paid ({selectedCountry.currency})</span>
                   <div className="text-lg font-extrabold text-slate-900 dark:text-white">
-                    {formatINR(b.totalAmountInr)}
+                    {formatPrice(b.totalAmountInr)}
                   </div>
                 </div>
 
@@ -290,7 +292,7 @@ export default function MyBookingsPage() {
               <div className="flex justify-between items-center text-teal-900 dark:text-teal-100 font-bold">
                 <span>Eligible Refund:</span>
                 <span className="text-sm font-extrabold text-teal-700 dark:text-teal-300">
-                  {formatINR(refundPreview.refundAmountInr)} ({refundPreview.refundPercentage}%)
+                  {formatPrice(refundPreview.refundAmountInr)} ({refundPreview.refundPercentage}%)
                 </span>
               </div>
               <p className="text-teal-800 dark:text-teal-300 text-[11px] leading-relaxed">

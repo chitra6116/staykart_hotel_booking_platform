@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { roomApi } from '../api/roomApi';
 import { amenityApi } from '../api/amenityApi';
 import { formatINR } from '../utils/formatters';
+import { useCurrency } from '../context/CurrencyContext';
 import { CITIES } from '../components/search/HeroSearchBar';
 import { RoomCardSkeleton } from '../components/common/Skeleton';
 import {
@@ -21,6 +22,7 @@ import {
 
 export default function SearchResultsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { formatPrice, selectedCountry } = useCurrency();
 
   const city = searchParams.get('city') || '';
   const checkIn = searchParams.get('checkIn') || '';
@@ -242,7 +244,7 @@ export default function SearchResultsPage() {
                   Max Price / Night
                 </label>
                 <span className="font-bold text-teal-600 dark:text-teal-400 text-sm">
-                  {formatINR(maxPrice)}
+                  {formatPrice(maxPrice)}
                 </span>
               </div>
               <input
@@ -255,9 +257,9 @@ export default function SearchResultsPage() {
                 className="w-full accent-teal-500 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-slate-400">
-                <span>₹800</span>
-                <span>₹12,000</span>
-                <span>₹25,000</span>
+                <span>{formatPrice(800)}</span>
+                <span>{formatPrice(12000)}</span>
+                <span>{formatPrice(25000)}</span>
               </div>
             </div>
 
@@ -356,42 +358,46 @@ export default function SearchResultsPage() {
               return (
                 <div
                   key={room.roomId}
-                  className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row group"
+                  className="card-hover bg-white dark:bg-slate-800/90 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row group"
                 >
                   {/* Photo Frame */}
-                  <div className="relative w-full sm:w-72 h-52 shrink-0 bg-slate-900 overflow-hidden">
+                  <div className="relative w-full sm:w-72 h-56 shrink-0 bg-slate-900 overflow-hidden">
                     <img
                       src={room.coverImageUrl || '/images/hero/hero-banner.webp'}
                       alt={`${room.propertyName} - ${room.roomTypeName}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                       loading="lazy"
                     />
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-semibold">
+                    <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/70 backdrop-blur-md text-white text-[11px] font-bold tracking-wide border border-white/10">
                       {room.roomTypeName}
+                    </div>
+                    <div className="absolute bottom-3 left-3 px-2.5 py-0.5 rounded-full bg-teal-500/90 backdrop-blur-md text-white text-[10px] font-bold tracking-wide flex items-center gap-1 shadow-sm">
+                      <Sparkles className="w-3 h-3" />
+                      <span>Instant Confirmation</span>
                     </div>
                   </div>
 
                   {/* Room Details */}
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div>
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider">
+                          <p className="text-[11px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">
                             Room #{room.roomNumber} &bull; Floor {room.floor}
                           </p>
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                          <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white leading-snug mt-0.5 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
                             {room.propertyName}
                           </h3>
                         </div>
                       </div>
 
-                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1.5">
                         <MapPin className="w-3.5 h-3.5 text-saffron-500 shrink-0" />
                         <span>{room.addressLine}, {room.city}, {room.state}</span>
                       </p>
 
-                      <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300 mt-3">
-                        <span className="flex items-center gap-1">
+                      <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300 mt-3 font-medium">
+                        <span className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700/50 px-2.5 py-1 rounded-lg">
                           <Users className="w-3.5 h-3.5 text-teal-500" />
                           Up to {room.maxGuests} Guests
                         </span>
@@ -399,17 +405,17 @@ export default function SearchResultsPage() {
 
                       {/* Amenities Chips */}
                       {room.amenities && room.amenities.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-3">
+                        <div className="flex flex-wrap gap-1.5 mt-3.5">
                           {room.amenities.slice(0, 4).map((a) => (
                             <span
                               key={a.id}
-                              className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-medium"
+                              className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-medium"
                             >
                               {a.name}
                             </span>
                           ))}
                           {room.amenities.length > 4 && (
-                            <span className="px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700/60 text-slate-500 dark:text-slate-400 text-[11px]">
+                            <span className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60 text-slate-500 dark:text-slate-400 text-[11px]">
                               +{room.amenities.length - 4} more
                             </span>
                           )}
@@ -418,29 +424,29 @@ export default function SearchResultsPage() {
                     </div>
 
                     {/* Price and CTA */}
-                    <div className="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-end justify-between">
+                    <div className="pt-3.5 border-t border-slate-100 dark:border-slate-700/60 flex items-end justify-between gap-4">
                       <div>
                         <div className="flex items-baseline gap-1">
-                          <span className="text-xl font-black text-slate-900 dark:text-white">
-                            {formatINR(nightlyPrice)}
+                          <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                            {formatPrice(nightlyPrice)}
                           </span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400">/ night</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">/ night</span>
                         </div>
                         {room.totalPriceInr && (
-                          <p className="text-[11px] text-teal-600 dark:text-teal-400 font-semibold">
-                            Total: {formatINR(room.totalPriceInr)} (incl. GST)
+                          <p className="text-xs text-teal-600 dark:text-teal-400 font-bold mt-0.5">
+                            Total: {formatPrice(room.totalPriceInr)} (incl. {selectedCountry.taxName})
                           </p>
                         )}
                         {!room.totalPriceInr && (
-                          <p className="text-[10px] text-slate-400">
-                            + applicable GST
+                          <p className="text-[10px] text-slate-400 mt-0.5">
+                            + applicable {selectedCountry.taxName}
                           </p>
                         )}
                       </div>
 
                       <Link
                         to={detailUrl}
-                        className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-semibold text-xs uppercase tracking-wider shadow-sm transition-all"
+                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-teal-500/20 hover:shadow-teal-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all shrink-0"
                       >
                         View &amp; Reserve
                       </Link>
