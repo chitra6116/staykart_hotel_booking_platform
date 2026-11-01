@@ -3,13 +3,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { setAuthToken } from '../api/client';
 import { useToast } from '../context/ToastContext';
-import { Hotel, Lock, Mail, User, Phone, AlertCircle, ArrowRight } from 'lucide-react';
+import { Hotel, Lock, Mail, User, Phone, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -59,7 +60,7 @@ export default function RegisterPage() {
       });
       // Do not auto-login: user logs in on the login page with their new credentials
       setAuthToken(null);
-      toast.success('Account created successfully! Please sign in with your credentials.');
+      toast.success('Account created successfully! Please sign in with your credentials.', 5000, 'Signed Up Successfully');
       const loginUrl = `/login?email=${encodeURIComponent(email.trim().toLowerCase())}${
         redirect !== '/' ? `&redirect=${encodeURIComponent(redirect)}` : ''
       }`;
@@ -73,14 +74,17 @@ export default function RegisterPage() {
           backendErrors[key] = fe.message;
         });
         setFieldErrors(backendErrors);
-        setError('Please check the highlighted fields below.');
+        const errMsg = 'Please check the highlighted fields below.';
+        setError(errMsg);
+        toast.error(errMsg, 4000, 'Registration Incomplete');
       } else {
         const rawMsg = resp?.message;
+        let errMsg = rawMsg;
         if (!rawMsg || rawMsg.toLowerCase().includes('date') || rawMsg.toLowerCase().includes('room')) {
-          setError('An account with this email address or phone already exists. Please log in or try with different credentials.');
-        } else {
-          setError(rawMsg);
+          errMsg = 'An account with this email address or phone already exists. Please log in or try with different credentials.';
         }
+        setError(errMsg);
+        toast.error(errMsg, 4000, 'Registration Failed');
       }
     } finally {
       setLoading(false);
@@ -200,7 +204,7 @@ export default function RegisterPage() {
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -208,12 +212,20 @@ export default function RegisterPage() {
                 }}
                 required
                 placeholder="••••••••"
-                className={`w-full pl-10 pr-4 py-2.5 rounded-xl border ${
+                className={`w-full pl-10 pr-11 py-2.5 rounded-xl border ${
                   fieldErrors.password
                     ? 'border-rose-400 focus:ring-rose-500'
                     : 'border-slate-300 dark:border-slate-600 focus:ring-teal-500'
-                } bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:outline-none`}
+                } bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:outline-none transition-all`}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-2.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/40 rounded-lg transition-colors cursor-pointer"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
             {fieldErrors.password ? (
               <p className="text-[11px] text-rose-500 mt-1">{fieldErrors.password}</p>

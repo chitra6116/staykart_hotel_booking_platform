@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { roomApi } from '../api/roomApi';
 import { pricingApi } from '../api/pricingApi';
 import { bookingApi } from '../api/bookingApi';
@@ -25,6 +26,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const toast = useToast();
+  const { formatPrice, selectedCountry } = useCurrency();
 
   const roomId = searchParams.get('roomId');
   const checkIn = searchParams.get('checkIn');
@@ -123,15 +125,18 @@ export default function CheckoutPage() {
         guestIdType,
         guestIdLast4: guestIdLast4.trim(),
         specialRequests: specialRequests.trim() || null,
-        idempotencyKey
+        idempotencyKey,
+        country: selectedCountry?.code || 'IN',
+        currency: selectedCountry?.currency || 'INR'
       };
 
       const booking = await bookingApi.create(payload);
       setHeldBooking(booking);
       setIsPaymentModalOpen(true);
+      toast.info('Room held for 10 minutes. Please complete payment.', 4000, 'Room Reserved');
     } catch (err) {
       const message = err.response?.data?.message || 'Selected dates are not available for this room.';
-      toast.error(message);
+      toast.error(message, 4000, 'Booking Failed');
     } finally {
       setIsSubmitting(false);
     }
@@ -144,11 +149,11 @@ export default function CheckoutPage() {
     try {
       const confirmed = await bookingApi.pay(heldBooking.id, paymentPayload);
       setIsPaymentModalOpen(false);
-      toast.success('Booking Confirmed! Your stay is booked.');
+      toast.success(`Booking Confirmed! Code: ${confirmed.bookingCode}`, 5000, 'Room Booked Successfully');
       navigate(`/confirmation/${confirmed.bookingCode}`);
     } catch (err) {
       const message = err.response?.data?.message || 'Payment processing failed. Please try again.';
-      toast.error(message);
+      toast.error(message, 4000, 'Payment Failed');
     } finally {
       setIsProcessingPayment(false);
     }
@@ -331,7 +336,7 @@ export default function CheckoutPage() {
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  <span>Proceed to Payment ({formatINR(quote?.totalAmountInr)})</span>
+                  <span>Proceed to Payment ({formatPrice(quote?.totalAmountInr)})</span>
                 </>
               )}
             </button>

@@ -6,6 +6,7 @@ import ImageGallery from '../components/gallery/ImageGallery';
 import PriceBreakdownWidget from '../components/booking/PriceBreakdownWidget';
 import { formatINR } from '../utils/formatters';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import {
   MapPin,
   Users,
@@ -24,6 +25,7 @@ export default function RoomDetailPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const { formatPrice, selectedCountry } = useCurrency();
 
   const getTodayString = () => new Date().toISOString().split('T')[0];
   const getTomorrowString = () => {
@@ -183,11 +185,11 @@ export default function RoomDetailPage() {
         <div className="text-left md:text-right">
           <div className="flex items-baseline md:justify-end gap-1">
             <span className="text-2xl sm:text-3xl font-black text-teal-600 dark:text-teal-400">
-              {formatINR(room.basePriceInr)}
+              {formatPrice(room.basePriceInr)}
             </span>
             <span className="text-xs text-slate-500 dark:text-slate-400">/ night</span>
           </div>
-          <p className="text-[11px] text-slate-400">+ applicable Indian GST</p>
+          <p className="text-[11px] text-slate-400">+ applicable {selectedCountry.taxName}</p>
         </div>
       </div>
 
@@ -286,18 +288,18 @@ export default function RoomDetailPage() {
 
         {/* Right Sticky Column: Reservation & Live Price Quote */}
         <div className="lg:col-span-1">
-          <div className="sticky top-24 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-xl space-y-5">
+          <div className="sticky top-24 bg-white dark:bg-slate-800/95 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 p-6 shadow-2xl shadow-slate-900/5 dark:shadow-slate-950/30 space-y-5">
             <div>
               <div className="flex items-baseline justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60">
-                <span className="text-xl font-black text-slate-900 dark:text-white">
-                  {formatINR(room.basePriceInr)}
+                <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  {formatPrice(room.basePriceInr)}
                 </span>
-                <span className="text-xs text-slate-500">per night + GST</span>
+                <span className="text-xs text-slate-500 font-medium">per night + {selectedCountry.taxName}</span>
               </div>
             </div>
 
             {/* Date Pickers */}
-            <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
               <div className="p-2">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   Check-in
@@ -307,7 +309,7 @@ export default function RoomDetailPage() {
                   min={getTodayString()}
                   value={checkIn}
                   onChange={handleCheckInChange}
-                  className="w-full bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                  className="w-full bg-transparent text-xs font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                 />
               </div>
               <div className="p-2 border-l border-slate-200 dark:border-slate-700">
@@ -319,20 +321,20 @@ export default function RoomDetailPage() {
                   min={checkIn}
                   value={checkOut}
                   onChange={(e) => setCheckOut(e.target.value)}
-                  className="w-full bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                  className="w-full bg-transparent text-xs font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                 />
               </div>
             </div>
 
             {/* Guests Selector */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Number of Guests
               </label>
               <select
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 {[...Array(room.maxGuests)].map((_, i) => (
                   <option key={i + 1} value={i + 1}>
@@ -344,7 +346,7 @@ export default function RoomDetailPage() {
 
             {/* Date Conflict Error */}
             {dateConflict && (
-              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+              <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>Selected dates are not available for this room.</span>
               </div>
@@ -355,7 +357,7 @@ export default function RoomDetailPage() {
 
             {/* Reservation Button */}
             {isAdmin ? (
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs text-center">
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs text-center font-medium">
                 You are signed in as an admin. Log in with a guest account to book this room.
               </div>
             ) : (
@@ -363,7 +365,7 @@ export default function RoomDetailPage() {
                 <button
                   onClick={handleProceedToCheckout}
                   disabled={dateConflict || quoteLoading || !quote}
-                  className="w-full py-3.5 rounded-xl bg-teal-500 hover:bg-teal-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold text-sm uppercase tracking-wider shadow-lg shadow-teal-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 disabled:from-slate-300 disabled:to-slate-300 dark:disabled:from-slate-700 dark:disabled:to-slate-700 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-teal-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <span>Reserve Room Now</span>
                 </button>

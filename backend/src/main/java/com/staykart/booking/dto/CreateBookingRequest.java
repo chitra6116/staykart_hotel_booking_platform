@@ -1,10 +1,12 @@
 package com.staykart.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.staykart.booking.entity.IdProofType;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record CreateBookingRequest(
     @NotNull(message = "Room ID is required")
     Long roomId,
@@ -41,5 +43,25 @@ public record CreateBookingRequest(
 
     String specialRequests,
 
-    String idempotencyKey
-) {}
+    String idempotencyKey,
+
+    String country,
+
+    String currency
+) {
+    public CreateBookingRequest(
+        Long roomId,
+        LocalDate checkIn,
+        LocalDate checkOut,
+        Integer guestsCount,
+        String guestName,
+        String guestEmail,
+        String guestPhone,
+        IdProofType guestIdType,
+        String guestIdLast4,
+        String specialRequests,
+        String idempotencyKey
+    ) {
+        this(roomId, checkIn, checkOut, guestsCount, guestName, guestEmail, guestPhone, guestIdType, guestIdLast4, specialRequests, idempotencyKey, null, null);
+    }
+}
