@@ -43,7 +43,9 @@ jobs:
           SPRING_DATASOURCE_USERNAME: test_user
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD || 'secret_password' }}
           JWT_SECRET: ${{ secrets.JWT_SECRET || 'test_dummy_jwt_secret_key_for_ci_build_only_64_bytes_minimum_length_here_abc123' }}
-        run: ./mvnw -B verify
+        run: |
+          chmod +x mvnw
+          ./mvnw -B verify
 
       - name: OWASP Dependency Check
         working-directory: backend
